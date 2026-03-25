@@ -1,0 +1,30 @@
+name: Sync Agenda Dos Orillas
+
+on:
+  schedule:
+    - cron: '0 9,21 * * *'  # 6:00 y 18:00 Argentina (UTC-3)
+  workflow_dispatch:          # permite correrlo manualmente desde GitHub
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar sync
+        env:
+          AGENDA_SUPABASE_URL: ${{ secrets.AGENDA_SUPABASE_URL }}
+          AGENDA_SUPABASE_ANON_KEY: ${{ secrets.AGENDA_SUPABASE_ANON_KEY }}
+          SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+        run: npm run sync
